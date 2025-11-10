@@ -963,7 +963,7 @@
     </comp>
     <comp lib="3" loc="(630,350)" name="Shifter">
       <a name="width" val="16"/>
-      <a name="shift" val="lr"/>
+      <a name="shift" val="ar"/>
     </comp>
     <comp lib="0" loc="(140,370)" name="Tunnel">
       <a name="facing" val="east"/>

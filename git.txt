@@ -1,0 +1,8 @@
+git pull
+<Modifications>
+git add .
+git commit -m "message"
+(pour la 1ère utilisation : git branch -M prenom)
+git push -u origin prenom
+
++ envoyer un message pour dire que vous avez push

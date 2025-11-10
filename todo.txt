@@ -1,0 +1,10 @@
+TODO : 
++ Composant Registres
++ Composant ALU
++ Composant DecodeIR
+
+- Tester les 3 composants précédents
+- Assembleur (en python)
+- Composant GetADDR
+- Composant Pile
+- Fichier de compte rendu (réponses aux questions)
