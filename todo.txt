@@ -2,9 +2,13 @@ TODO :
 + Composant Registres
 + Composant ALU
 + Composant DecodeIR
++ Assembleur (en python)
 
 - Tester les 3 composants précédents
-- Assembleur (en python)
+- Créer des tests pour l'assembleur
+- Gérer les opérations MEM dans l'assembleur
+- Gérer les opérations CTRL dans l'assembleur
+- Gérer les labels dans l'assembleur
 - Composant GetADDR
 - Composant Pile
 - Fichier de compte rendu (réponses aux questions)
