@@ -159,7 +159,7 @@ def process_line(keys: list[str]):
     code = get_operation_code(op)
     bin_code = category + code
 
-    if category == "00": # If arithmetic operation
+    if category == "00": # arithmetic operation
         is_immediate = is_operation_immediate(op)
         bin_code += "1" if is_immediate else "0"
         bin_code += get_register_binary(keys[1])
@@ -169,13 +169,17 @@ def process_line(keys: list[str]):
         else:
             bin_code += get_register_binary(keys[3])
 
-    if category == "11": # If CTRL operation
+    if category == "11": # CTRL operation
         if op == 'JMP': # no registers for JMP instruction, only label
             bin_code += label_encoding(keys[1])
         else:
             bin_code += get_register_binary(keys[1])
             bin_code += get_register_binary(keys[2])
             bin_code += label_encoding(keys[3])
+
+    if category == "01": # MEM operation
+        bin_code += get_register_binary(keys[1])
+        bin_code += get_register_binary(keys[2])
         
     return fill_with_zeros(bin_code, INSTRUCTION_SIZE) # make instruction 32 bits long
 
