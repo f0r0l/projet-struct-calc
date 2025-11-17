@@ -13,3 +13,5 @@ A FAIRE :
 - Composant GetADDR
 - Composant Pile
 - Fichier de compte rendu (réponses aux questions)
+- Docs https://docs.google.com/document/d/1hAzsGyHSP7FDqS5E7n3U-pQMMv79f4NiPNKKGX78PyI/edit?hl=fr&tab=t.0
+
