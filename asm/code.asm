@@ -1,9 +1,4 @@
-@ Test file
-main:
-        XOR R1 R1 R1
-        XOR R2 R2 R2  @ hello
-while:  JNEQ R1 R2 endwh
-        ADDi R1 R1 5
-        JMP while
-endwh:  SUBi R1 R1 4
-
+ADDi R0 R0 8
+ADDi R1 R1 42
+ST R1 R0
+LD R7 R0

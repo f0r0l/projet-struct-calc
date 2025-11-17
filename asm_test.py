@@ -52,13 +52,13 @@ def main():
         print(Style.RESET_ALL)
         print(f"> TEST {test_index} : ")
         try:
-            compiled_code = compile_code(INPUT)
+            (bin_code, compiled_hex) = compile_code(INPUT)
 
             if OUTPUT is None:
                 print(Fore.RED, end="")
                 print(f"[-] FAILED")
                 print("Should have returned an error, but returned")
-                print(compiled_code)
+                print(bin_code)
                 continue
 
             txt_output = ""
@@ -66,19 +66,19 @@ def main():
                 txt_output += out_line[::-1] + "\n"
             txt_output = txt_output.removesuffix("\n")
 
-            n = len(compiled_code.split('\n'))
+            n = len(bin_code.split('\n'))
             m = len(txt_output.split('\n'))
             if n != m:
                 print(Fore.RED, end="")
                 print(f"[-] FAILED : Different lengths ({n} vs {m})")
-                print(compiled_code)
+                print(bin_code)
                 print("vs")
                 print(txt_output)
                 continue
             
             isError = False
             for i in range(0, n):
-                a = compiled_code.split("\n")[i]
+                a = bin_code.split("\n")[i]
                 b = txt_output.split("\n")[i]
                 if a != b:
                     print(Fore.RED, end="")

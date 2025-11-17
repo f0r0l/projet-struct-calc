@@ -50,6 +50,19 @@ def write_bin_file(bin_lines):
         sys.exit(1)
 
 
+def write_hex_file(hex_lines):
+    path = "out.hex" # Default path
+    if len(sys.argv) >= 3:
+        path = sys.argv[2]
+
+    try:
+        with open(path, 'w+') as out_file:
+            out_file.write(hex_lines)
+    except:
+        print("ERR : ASM file not found at path " + path)
+        sys.exit(1)
+
+
 def print_error(msg: str):
     global current_line_index
     print("Error at line " + str(current_line_index) + " :")
@@ -70,13 +83,23 @@ def to_bin(nb: int, size: int):
     return (size-n) * "0" + bin_nb
 
 
+def bin_to_hex(bin: str):
+    """Converts a 32-bits long number in a 8 bits hexadecimal string"""
+    hex_nb = hex(int(bin, 2))
+    hex_nb = hex_nb.removeprefix("0x").upper()
+    n = len(hex_nb)
+    if n > 8:
+        print_error(bin + " could not be converted to a 8 long hexadecimal nb")
+    return (8-n) * "0" + hex_nb
+
+
 def label_encoding(label: str, bin_size = 16):
     global labels
     
     if label not in labels:
         print_error("Label '" + label + "' does not exist")
 
-    return to_bin(labels[label], bin_size)
+    return to_bin(labels[label], bin_size)[::-1] # reverse for Logisim
 
 
 def fill_with_zeros(bin: str, size: int):
@@ -136,13 +159,13 @@ def get_operation_category(op: str):
     print_error("Unknown operation '" + op + "'")
 
 
-def get_register_binary(reg: str | None):
+def get_register_binary(reg: str | None) -> str:
     if not is_register_valid(reg):
         print_error("Invalid register '" + reg + "'")
     
     try:
         reg_nb = int(reg.removeprefix("R"))
-        return to_bin(reg_nb, 3)
+        return to_bin(reg_nb, 3)[::-1] # reverse for Logisim
     except:
         print_error("Invalid register '" + reg + "'")
 
@@ -165,7 +188,7 @@ def process_line(keys: list[str]):
         bin_code += get_register_binary(keys[1])
         bin_code += get_register_binary(keys[2])
         if is_immediate:
-            bin_code += to_bin(int(keys[3]), CONSTANT_SIZE)
+            bin_code += to_bin(int(keys[3]), CONSTANT_SIZE)[::-1] # reverse constant for Logisim
         else:
             bin_code += get_register_binary(keys[3])
 
@@ -178,6 +201,7 @@ def process_line(keys: list[str]):
             bin_code += label_encoding(keys[3])
 
     if category == "01": # MEM operation
+        bin_code += "0" # unused bit
         bin_code += get_register_binary(keys[1])
         bin_code += get_register_binary(keys[2])
         
@@ -187,6 +211,7 @@ def process_line(keys: list[str]):
 def compile_code(code_lines):
     code_keys = analyse_labels(code_lines)
     bin_code = "" # the string containing the final code 
+    hex_code = ""
     for keys in code_keys:
         bin_line = process_line(keys)
         if bin_line is None: continue
@@ -194,9 +219,10 @@ def compile_code(code_lines):
         reversed_line = bin_line[::-1] # reverse line for Logisim
         # separate line in groups of 8 bits for importing in Logisim
         splitted_line = reversed_line[:8] + " " + reversed_line[8:16] + " " + reversed_line[16:24] + " " + reversed_line[24:32]
+        hex_code += bin_to_hex(reversed_line) + "\n"
         bin_code += splitted_line + "\n"
 
-    return bin_code.removesuffix("\n")
+    return (bin_code.removesuffix("\n"), hex_code.removesuffix("\n"))
 
 
 def analyse_labels(code_lines):
@@ -231,8 +257,9 @@ def analyse_labels(code_lines):
 
 def main():
     code_lines = open_asm_file()
-    bin_lines = compile_code(code_lines)
-    print(bin_lines)
+    (bin_lines, hex_lines) = compile_code(code_lines)
+    print(hex_lines)
+    write_hex_file(hex_lines)
     write_bin_file(bin_lines)
 
 
