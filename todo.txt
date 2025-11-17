@@ -10,6 +10,7 @@ FAIT :
 A FAIRE :
 - Tester les 3 composants précédents
 - Créer des tests pour l'assembleur
+- Composant pour gérer les JMP (vérifier les conditions) -> JMPCond
 - Composant GetADDR
 - Composant Pile
 - Fichier de compte rendu (réponses aux questions)
