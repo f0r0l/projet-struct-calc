@@ -31,8 +31,16 @@ TESTS = [
             "11000000 00000000 00011000 00000000",
         ]
     ),
+    ( ["JEQU R0 R0 label"], None ),
     (
-        ["JEQU R0 R0 label"], None
+        [
+            "LD R0 R4",
+            "label:    ST R2 R7"
+        ],
+        [
+            "01000000 10000000 00000000 00000000",
+            "01001010 11100000 00000000 00000000"
+        ]
     )
 ]
 
@@ -68,6 +76,7 @@ def main():
                 print(txt_output)
                 continue
             
+            isError = False
             for i in range(0, n):
                 a = compiled_code.split("\n")[i]
                 b = txt_output.split("\n")[i]
@@ -76,8 +85,12 @@ def main():
                     print(f"[-] FAILED : At line {i+1}")
                     print("Expected : " + b)
                     print("Got      : " + a)
-                    continue
+                    
+                    isError = True
+                    break
 
+            if isError: continue
+            
             print(Fore.LIGHTGREEN_EX, end="")
             print(f"[+] SUCCESS")
         except SystemExit:
