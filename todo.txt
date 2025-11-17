@@ -5,11 +5,11 @@ FAIT :
 + Assembleur (en python)
 + Gérer les labels dans l'assembleur
 + Gérer les opérations CTRL dans l'assembleur
++ Gérer les opérations MEM dans l'assembleur
 
 A FAIRE :
 - Tester les 3 composants précédents
 - Créer des tests pour l'assembleur
-- Gérer les opérations MEM dans l'assembleur
 - Composant GetADDR
 - Composant Pile
 - Fichier de compte rendu (réponses aux questions)
