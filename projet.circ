@@ -2775,6 +2775,7 @@
       <circ-anchor facing="east" height="6" width="6" x="47" y="47"/>
     </appear>
     <wire from="(280,310)" to="(280,380)"/>
+    <wire from="(230,310)" to="(230,320)"/>
     <wire from="(80,140)" to="(80,150)"/>
     <wire from="(80,160)" to="(80,170)"/>
     <wire from="(150,490)" to="(150,520)"/>
@@ -2798,9 +2799,7 @@
     <wire from="(150,460)" to="(220,460)"/>
     <wire from="(130,480)" to="(130,490)"/>
     <wire from="(130,460)" to="(130,470)"/>
-    <wire from="(230,300)" to="(230,310)"/>
     <wire from="(190,500)" to="(190,520)"/>
-    <wire from="(160,300)" to="(200,300)"/>
     <wire from="(240,530)" to="(240,560)"/>
     <wire from="(200,510)" to="(200,540)"/>
     <wire from="(280,400)" to="(280,490)"/>
@@ -2813,14 +2812,14 @@
     <wire from="(110,50)" to="(130,50)"/>
     <wire from="(80,140)" to="(100,140)"/>
     <wire from="(240,560)" to="(260,560)"/>
-    <wire from="(220,320)" to="(240,320)"/>
     <wire from="(120,490)" to="(130,490)"/>
     <wire from="(140,430)" to="(150,430)"/>
     <wire from="(200,410)" to="(210,410)"/>
     <wire from="(210,520)" to="(220,520)"/>
-    <wire from="(220,310)" to="(230,310)"/>
-    <wire from="(230,300)" to="(240,300)"/>
     <wire from="(190,540)" to="(200,540)"/>
+    <wire from="(230,300)" to="(240,300)"/>
+    <wire from="(230,320)" to="(240,320)"/>
+    <wire from="(200,310)" to="(210,310)"/>
     <wire from="(150,490)" to="(220,490)"/>
     <comp lib="6" loc="(183,582)" name="Text">
       <a name="text" val="(rien)"/>
@@ -2864,9 +2863,6 @@
       <a name="facing" val="east"/>
       <a name="label" val="JNEQ"/>
     </comp>
-    <comp lib="6" loc="(257,286)" name="Text">
-      <a name="text" val="Verif si operation de controle"/>
-    </comp>
     <comp lib="0" loc="(40,170)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="width" val="32"/>
@@ -2885,11 +2881,6 @@
       <a name="value" val="0x0"/>
     </comp>
     <comp lib="0" loc="(190,540)" name="Constant"/>
-    <comp lib="0" loc="(160,300)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="width" val="32"/>
-      <a name="label" val="IR"/>
-    </comp>
     <comp lib="0" loc="(640,150)" name="Tunnel">
       <a name="label" val="JSUP"/>
     </comp>
@@ -2939,9 +2930,28 @@
     <comp lib="0" loc="(620,330)" name="Constant">
       <a name="value" val="0x0"/>
     </comp>
-    <comp lib="0" loc="(200,300)" name="Splitter">
+    <comp lib="0" loc="(640,240)" name="Tunnel">
+      <a name="label" val="JNEQ"/>
+    </comp>
+    <comp lib="0" loc="(200,410)" name="Constant"/>
+    <comp lib="0" loc="(190,520)" name="Constant"/>
+    <comp lib="0" loc="(140,430)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="JEQU"/>
+    </comp>
+    <comp lib="0" loc="(620,150)" name="Constant">
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(100,140)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="RCond1"/>
+    </comp>
+    <comp lib="2" loc="(260,490)" name="Multiplexer">
+      <a name="select" val="3"/>
+    </comp>
+    <comp lib="0" loc="(210,310)" name="Splitter">
       <a name="incoming" val="32"/>
-      <a name="appear" val="right"/>
+      <a name="appear" val="center"/>
       <a name="bit2" val="none"/>
       <a name="bit3" val="none"/>
       <a name="bit4" val="none"/>
@@ -2973,26 +2983,15 @@
       <a name="bit30" val="none"/>
       <a name="bit31" val="none"/>
     </comp>
-    <comp lib="0" loc="(640,240)" name="Tunnel">
-      <a name="label" val="JNEQ"/>
-    </comp>
-    <comp lib="0" loc="(200,410)" name="Constant"/>
-    <comp lib="0" loc="(190,520)" name="Constant"/>
-    <comp lib="0" loc="(140,430)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="JEQU"/>
-    </comp>
-    <comp lib="0" loc="(620,150)" name="Constant">
-      <a name="value" val="0x0"/>
-    </comp>
-    <comp lib="0" loc="(100,140)" name="Tunnel">
-      <a name="width" val="3"/>
-      <a name="label" val="RCond1"/>
-    </comp>
-    <comp lib="2" loc="(260,490)" name="Multiplexer">
-      <a name="select" val="3"/>
+    <comp lib="6" loc="(254,282)" name="Text">
+      <a name="text" val="Verif si operation de controle"/>
     </comp>
     <comp lib="0" loc="(320,600)" name="Tunnel">
+      <a name="width" val="32"/>
+      <a name="label" val="IR"/>
+    </comp>
+    <comp lib="0" loc="(200,310)" name="Tunnel">
+      <a name="facing" val="east"/>
       <a name="width" val="32"/>
       <a name="label" val="IR"/>
     </comp>
