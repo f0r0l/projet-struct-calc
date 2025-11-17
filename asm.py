@@ -1,11 +1,27 @@
+"""
+FONCTIONNEMENT :
+1) "Supprime" les commentaires
+2) Analyse les labels et les mets dans l'objet label avec 
+   en clé le label et en valeur la ligne à laquelle il pointe
+3) Convertit la ligne de code en un tableau de keywords
+4) Convertit chacun de ces keywords en code binaire correspondant
+
+-> Si une erreur est détectée tout s'arrête
+"""
+
 import sys
 
 INSTRUCTION_SIZE = 32
 CONSTANT_SIZE = 16
 
+NB_OF_REGISTERS = 8
+
 ARITHMETIC_OPERATIONS = ["ADD", "SUB", "AND", "OR", "XOR", "SL", "SR", "MUL"]
 MEM_OPERATIONS = ["LD", "ST"]
 CTRL_OPERATIONS = ["JMP", "JEQU", "JNEQ", "JSUP", "JINF", "CALL", "RET"]
+
+labels = {}
+current_line_index = 0
 
 
 def open_asm_file():
@@ -18,7 +34,7 @@ def open_asm_file():
             return asm_file.readlines()
     except:
         print("ERR : ASM file not found at path " + path)
-        exit(1)
+        sys.exit(1)    
 
 
 def write_bin_file(bin_lines):
@@ -31,23 +47,53 @@ def write_bin_file(bin_lines):
             out_file.write(bin_lines)
     except:
         print("ERR : ASM file not found at path " + path)
-        exit(1)
+        sys.exit(1)
+
+
+def print_error(msg: str):
+    global current_line_index
+    print("Error at line " + str(current_line_index) + " :")
+    print(msg)
+    sys.exit(1)
 
 
 def to_bin(nb: int, size: int):
+    """
+    converts a decimal number to a binary number in a string
+    of size provided in arguments
+    """
     bin_nb = bin(nb)
     bin_nb = bin_nb.removeprefix("0b")
     n = len(bin_nb)
     if n > size:
-        print(nb + " could not be converted to a " + size + " long binary nb")
-        exit(1)
+        print_error(nb + " could not be converted to a " + size + " long binary nb")
     return (size-n) * "0" + bin_nb
+
+
+def label_encoding(label: str, bin_size = 16):
+    global labels
+    
+    if label not in labels:
+        print_error("Label '" + label + "' does not exist")
+
+    return to_bin(labels[label], bin_size)
 
 
 def fill_with_zeros(bin: str, size: int):
     n = len(bin)
     if n >= size: return bin
     return bin + (size-n) * "0"
+
+
+def is_register_valid(reg: str | None):
+    if reg == "":
+        return False
+    
+    if reg[0] != 'R':
+        return False
+    
+    x = int(reg[1:])
+    return x >= 0 and x <= NB_OF_REGISTERS-1
 
 
 def is_operation_immediate(op: str):
@@ -74,8 +120,7 @@ def get_operation_code(op: str):
         case "MUL" | "MULi":
             return "111"
         case _:
-            print("ERR : Unknown operation " + op)
-            exit(1)
+            print_error("Unknown operation " + op)
 
 
 def get_operation_category(op: str):
@@ -86,31 +131,27 @@ def get_operation_category(op: str):
     if op in MEM_OPERATIONS: return "01"
     if op in CTRL_OPERATIONS: return "11"
 
-    print("ERR : Unknown operation " + op)
-    exit(1)
+    print_error("Unknown operation '" + op + "'")
 
 
 def get_register_binary(reg: str | None):
-    if reg is None or not reg.startswith("R"):
-        print("Invalid register " + reg)
-        exit(1)
+    if not is_register_valid(reg):
+        print_error("Invalid register '" + reg + "'")
     
     try:
         reg_nb = int(reg.removeprefix("R"))
         return to_bin(reg_nb, 3)
     except:
-        print("Invalid register " + reg)
-        exit(1)
+        print_error("Invalid register '" + reg + "'")
 
 
-def process_line(line: str):
-    line = line.strip()
-    if line.startswith("@"): # Ignore comments
-        return None
-    
-    keys = line.split(" ")
+def process_line(keys: list[str]):
+    global current_line_index
+    current_line_index += 1 # use for printing errors
+
+    if len(keys) == 0: return None
+
     op = keys[0]
-    if op is None: return None
 
     category = get_operation_category(op)
     code = get_operation_code(op)
@@ -125,17 +166,61 @@ def process_line(line: str):
             bin_code += to_bin(int(keys[3]), CONSTANT_SIZE)
         else:
             bin_code += get_register_binary(keys[3])
+
+    if category == "11": # If CTRL operation
+        if op == 'JMP': # no registers for JMP instruction, only label
+            bin_code += label_encoding(keys[1])
+        else:
+            bin_code += get_register_binary(keys[1])
+            bin_code += get_register_binary(keys[2])
+            bin_code += label_encoding(keys[3])
         
-    return fill_with_zeros(bin_code, INSTRUCTION_SIZE)
+    return fill_with_zeros(bin_code, INSTRUCTION_SIZE) # make instruction 32 bits long
 
 
 def compile_code(code_lines):
-    bin_lines = ""
+    code_keys = analyse_labels(code_lines)
+    bin_code = "" # the string containing the final code 
+    for keys in code_keys:
+        bin_line = process_line(keys)
+        if bin_line is None: continue
+
+        reversed_line = bin_line[::-1] # reverse line for Logisim
+        # separate line in groups of 8 bits for importing in Logisim
+        splitted_line = reversed_line[:8] + " " + reversed_line[8:16] + " " + reversed_line[16:24] + " " + reversed_line[24:32]
+        bin_code += splitted_line + "\n"
+
+    return bin_code.removesuffix("\n")
+
+
+def analyse_labels(code_lines):
+    # The array that will be returned containing only useful keys
+    # (without comments or labels)
+    code_keys = [] 
+    i = 0
     for line in code_lines:
-        bin_code = process_line(line)
-        if bin_code is None: continue # Ignore comments
-        bin_lines += bin_code[::-1] + "\n"
-    return bin_lines.removesuffix("\n")
+        code_keys.append([]) # empty line in case the line is not code
+        line = line.strip()
+        if line.startswith("@"): # ignore comments
+            continue
+        
+        keys = line.split(" ")
+        keys = [key for key in keys if key != '' and key != ' ']
+        
+        if len(keys) == 0: continue
+
+        if keys[0].endswith(":"): # starts with a label
+            labels[keys[0].removesuffix(":")] = i # store label in global labels obj
+            keys = keys[1:]
+
+        if len(keys) == 0: continue
+        if keys[0].startswith("@"): # the line is a label + a comment : ignore it
+            continue
+
+        code_keys[i] = keys
+        i += 1
+
+    return code_keys
 
 
 def main():

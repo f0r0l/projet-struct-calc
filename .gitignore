@@ -1,3 +1,4 @@
 versions/
 projet.pdf
 *.bin
+__pycache__
